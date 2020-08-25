@@ -44,7 +44,7 @@ cd ..
 # fetch sources to be updated
 if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} targetdwn; fi
 cd ${WORKSPACE}/targetdwn
-  git checkout --track origin/${DWNSTM_REPO} || true
+  git checkout --track origin/${DWNSTM_BRANCH} || true
   git config user.email jpinkney@REDHAT.COM
   git config user.name "Web-Terminal Build"
   git config --global push.default matching
@@ -61,7 +61,7 @@ cd ..
 cp -r sources/* targetdwn/
 
 cd targetdwn
-if [[ \$(git diff --name-only) ]]; then # file changed
+if [[ $(git diff --name-only) ]]; then # file changed
   git add .
   git commit -s -m "[sync] Updated from ${SOURCE_REPO} @ ${SOURCE_SHA:0:8} " || true
   git push origin ${DWNSTM_BRANCH} || true
