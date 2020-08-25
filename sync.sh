@@ -28,13 +28,6 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 klist # verify working
 
-hasChanged=0
-
-SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
-
-# REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
-chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
   export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
@@ -46,7 +39,6 @@ cd ..
 
 # fetch sources to be updated
 DWNSTM_REPO="''' + DWNSTM_REPO + '''"
-ssh://pkgs.devel.redhat.com/containers/web-terminal-tooling
 if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} targetdwn; fi
 cd ${WORKSPACE}/targetdwn
   git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
