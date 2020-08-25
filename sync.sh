@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -7,7 +7,7 @@ chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + ''
 # create .k5login file
 echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
 chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
- echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
 
 ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
@@ -28,6 +28,11 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 klist # verify working
 
+#########################################################################
+#
+#                     Check out sources
+#
+#########################################################################
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
   export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
@@ -48,10 +53,21 @@ cd ${WORKSPACE}/targetdwn
   DWNSTM_SHA=$(git rev-parse HEAD)
 cd ..
 
-if [[ "${SOURCE_SHA}" != "${DWNSTM_SHA}" ]]; then
-  cd sources
-  echo "Syncing source with downstream"
-  git push origin ''' + DWNSTM_BRANCH + '''
+#########################################################################
+#
+#             Copy sources from upstream branch to dist-git
+#
+#########################################################################
+
+# copy over the files
+cp -r sources/* targetdwn/
+
+cd targetdwn
+if [[ \$(git diff --name-only) ]]; then # file changed
+  git add .
+  git commit -s -m "[sync] Updated from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} " || true
+  git push origin ''' + DWNSTM_BRANCH + ''' || true
+  echo "[sync] Updated from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} "
 else
-  echo "Source and downstream SHA are the same. No need to sync"
+  echo "Source and downstream contents are the same. No need to sync"
 fi
