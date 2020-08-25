@@ -77,6 +77,8 @@ function release () {
 
 parse_arguments "$@"
 
+cd .. # Change to the root of all the web-terminal-* projects
+
 function push_to_quay () {
     REGISTRY=registry-proxy.engineering.redhat.com/rh-osbs
     BREW_IMG=$REGISTRY/$1
