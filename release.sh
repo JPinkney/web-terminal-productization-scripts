@@ -67,12 +67,12 @@ function parse_arguments() {
 function release () {
     echo "Starting $1 release process"
     cd $1
-    rhpkg --verbose container-build --target=web-terminal-1.0-rhel-8-containers-candidate > tmp.log 2>&1
-    NVR=$(cat tmp.log | grep -A1 "nvrs:" | tail -n 1)
-    rm tmp.log
+    rhpkg --verbose container-build --target=web-terminal-1.0-rhel-8-containers-candidate > ../tmp.log 2>&1
+    NVR=$(cat ../tmp.log | grep -A1 "nvrs:" | tail -n 1)
+    cd ..
     echo "Finished $1 release process. Brew NVR is: $NVR"
     echo $NVR >> $FILENAME
-    cd ..
+    rm tmp.log
 }
 
 parse_arguments "$@"
