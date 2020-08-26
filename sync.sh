@@ -38,7 +38,6 @@ cd ${WORKSPACE}/sources
   git config user.email "jpinkney+web-terminal-release@gmail.com"
   git config user.name "Red Hat Web Terminal Release Bot"
   git config --global push.default matching
-  SOURCE_SHA=$(git rev-parse HEAD)
 cd ..
 
 # fetch sources to be updated
@@ -48,7 +47,6 @@ cd ${WORKSPACE}/targetdwn
   git config user.email jpinkney@REDHAT.COM
   git config user.name "Web-Terminal Build"
   git config --global push.default matching
-  DWNSTM_SHA=$(git rev-parse HEAD)
 cd ..
 
 #########################################################################
@@ -59,13 +57,3 @@ cd ..
 
 # copy over the files
 cp -r sources/* targetdwn/
-
-cd targetdwn
-if [[ $(git diff --name-only) ]]; then # file changed
-  git add .
-  git commit -s -m "[sync] Updated from ${SOURCE_REPO} @ ${SOURCE_SHA:0:8} " || true
-  git push origin ${DWNSTM_BRANCH} || true
-  echo "[sync] Updated from ${SOURCE_REPO} @ ${SOURCE_SHA:0:8} "
-else
-  echo "Source and downstream contents are the same. No need to sync"
-fi
