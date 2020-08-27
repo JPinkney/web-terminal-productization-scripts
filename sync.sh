@@ -44,8 +44,8 @@ cd ..
 if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} targetdwn; fi
 cd ${WORKSPACE}/targetdwn
   git checkout --track origin/${DWNSTM_BRANCH} || true
-  git config user.email jpinkney@REDHAT.COM
-  git config user.name "Web-Terminal Build"
+  git config user.email crw-build@REDHAT.COM
+  git config user.name "CRW Build"
   git config --global push.default matching
 cd ..
 
