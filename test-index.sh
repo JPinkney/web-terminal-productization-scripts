@@ -35,19 +35,19 @@ function parse_arguments() {
 }
 
 print_usage () {
-	echo "Usage:   $0 -i [ORIGINAL_INDEX] -t [TARGET_INDEX]"
-	echo "Options:
-	--index,  -i     the index which should be tested
+  echo "Usage:   $0 -i [ORIGINAL_INDEX] -t [TARGET_INDEX]"
+  echo "Options:
+  --index,  -i     the index which should be tested
                    To find index see Index Image Location in cvp-test-report of
                    web-terminal-operator-metadata-container-${WANTED_VERSION}
                    http://external-ci-coldstorage.datahub.redhat.com/cvp/cvp-redhat-operator-bundle-image-validation-test/
 
-	--target, -t     the target where mirrored index should be pushed
+  --target, -t     the target where mirrored index should be pushed
 
   --verbose, -v    print the verbose output during execution
 
-	--help,   -h     help
-	"
+  --help,   -h     help
+  "
 }
 
 parse_arguments "$@"
