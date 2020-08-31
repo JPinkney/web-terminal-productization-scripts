@@ -100,7 +100,7 @@ oc apply -f imageContentSourcePolicy.yaml
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: web-terminal-crd-registry
+  name: custom-web-terminal-catalog
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
